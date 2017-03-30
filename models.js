@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 
 //set up schema for a blog post
 const postSchema = mongoose.Schema({
-  title: String
-  content: String
+  title: String,
+  content: String,
   author: {
     firstName: String,
     lastName: String

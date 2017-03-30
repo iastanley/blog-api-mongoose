@@ -1,7 +1,7 @@
 'use strict';
-const express = require('express'),
-      mongoose = require('mongoose'),
-      bodyParser = require('body-parser');
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 
 //overwrite mongoose Promise object with ES6 Promise
 mongoose.Promise = global.Promise;
@@ -14,6 +14,72 @@ const app = express();
 app.use(bodyParser.json());
 
 //ROUTES
+//get 10 blog posts
+app.get('/blog-posts', (req, res) => {
+  Post
+    .find()
+    .limit(10)
+    .exec()
+    .then(posts => {
+      res.json(posts.map(post => post.apiReturn()));
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({message: 'Internal server error'});
+    });
+});
+
+//get blog post by id
+
+//create blog post
+
+//update blog post by id
+app.put('/blog-posts/:id', (req, res) => {
+  //verify req.params.id and req.body.id
+  if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
+    const message = `Request path id ${req.params.id} `
+                  + `and request body id ${req.body.id} `
+                  + `do not match`;
+    console.error(message);
+    res.status(400).json({message: message});
+  }
+  //object used for update
+  const updatesToPost = {};
+  const updateFields = ['title', 'content', 'author'];
+  //add updated fields to updatesToPost
+  updateFields.forEach(field => {
+    if(field in req.body) {
+      //assumes author will be input as full name
+      if (field === 'author') {
+        updatesToPost['author'] = {};
+        updatesToPost.author.firstName =
+          req.body.author.substr(0, req.body.author.indexOf(' '));
+        updatesToPost.author.lastName =
+          req.body.author.substr(req.body.author.indexOf(' ') + 1);
+      } else {
+        updatesToPost[field] = req.body[field];
+      }
+
+    }
+  });
+
+  //update document and return 201 status code
+  Post
+    .findByIdAndUpdate(req.params.id, {$set: updatesToPost}, {new: true})
+    .exec()
+    .then(post => res.status(201).json(post.apiReturn()))
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({message: 'Internal server error'});
+    });
+});
+
+//delete blog post by id
+
+//catch all other routes
+app.use('*', (req, res) => {
+  res.status(404).send('URL Not Found');
+});
 
 //STARTING AND STOPPING THE SERVER FUNCTIONS
 let server;
