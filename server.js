@@ -1,3 +1,4 @@
+'use strict';
 const express = require('express'),
       mongoose = require('mongoose'),
       bodyParser = require('body-parser');
@@ -17,12 +18,38 @@ app.use(bodyParser.json());
 //STARTING AND STOPPING THE SERVER FUNCTIONS
 let server;
 
-function runServer() {
+function runServer(databaseUrl=DATABASE_URL, port=PORT) {
   //return promise that connects database and starts server
+  return new Promise((resolve, reject) => {
+    mongoose.connect(databaseUrl, err => {
+      if (err) {
+        return reject(err);
+      }
+      server = app.listen(port, () => {
+        console.log(`The server has started. Listening at port ${port}`);
+        resolve();
+      })
+      .on('error', err => {
+        mongoose.disconnect();
+        reject(err);
+      });
+    });
+  });
 }
 
 function closeServer() {
   //return promise that disconnects database and closes server
+  return mongoose.disconnect().then(() => {
+    return new Promise((resolve, reject) => {
+      console.log('Closing server');
+      server.close(err => {
+        if (err) {
+          return reject(err);
+        }
+        resolve();
+      });
+    });
+  });
 }
 
 //allow runServer to run only if called directly
