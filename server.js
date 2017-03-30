@@ -21,7 +21,7 @@ app.get('/blog-posts', (req, res) => {
     .limit(10)
     .exec()
     .then(posts => {
-      res.json(posts.map(post => post.apiReturn()));
+      res.status(200).json(posts.map(post => post.apiReturn()));
     })
     .catch(err => {
       console.error(err);
@@ -30,8 +30,43 @@ app.get('/blog-posts', (req, res) => {
 });
 
 //get blog post by id
-
+app.get('/blog-posts/:id', (req, res) => {
+  Post
+    .findById(req.params.id)
+    .exec()
+    .then(post => res.status(200).json(post.apiReturn()))
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({message: 'Internal server error'});
+    });
+});
 //create blog post
+app.post('/blog-posts', (req, res) => {
+  //validate required fields
+  const requiredFields = ['title', 'content', 'author'];
+  requiredFields.forEach(field => {
+    if (!(field in req.body)) {
+      const message = `Missing '${field}' in request body`;
+      console.error(message);
+      return res.status(400).send(message);
+    }
+  });
+
+  Post
+    .create({
+      title: req.body.title,
+      content: req.body.content,
+      author: {
+        firstName: req.body.author.substr(0, req.body.author.indexOf(' ')),
+        lastName: req.body.author.substr(req.body.author.indexOf(' ') + 1)
+      }
+    })
+    .then(post => res.status(201).json(post.apiReturn()))
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({message: 'Internal server error'});
+    });
+});
 
 //update blog post by id
 app.put('/blog-posts/:id', (req, res) => {
@@ -75,6 +110,16 @@ app.put('/blog-posts/:id', (req, res) => {
 });
 
 //delete blog post by id
+app.delete('/blog-posts/:id', (req, res) => {
+  Post
+    .findByIdAndRemove(req.params.id)
+    .exec()
+    .then(() => res.status(204).end())
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({message: 'Internal server error'});
+    })
+});
 
 //catch all other routes
 app.use('*', (req, res) => {
