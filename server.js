@@ -18,7 +18,6 @@ app.use(bodyParser.json());
 app.get('/blog-posts', (req, res) => {
   Post
     .find()
-    .limit(10)
     .exec()
     .then(posts => {
       res.status(200).json(posts.map(post => post.apiReturn()));
