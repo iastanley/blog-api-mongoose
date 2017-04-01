@@ -2,7 +2,9 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const faker = require('faker');
+const mongoose = require('mongoose');
 
+const {Post} = require('../models.js')
 const {app, runServer, closeServer} = require('../server.js');
 
 const should = chai.should();
