@@ -10,10 +10,54 @@ const {app, runServer, closeServer} = require('../server.js');
 const should = chai.should();
 chai.use(chaiHttp);
 
+//HELPER FUNCTIONS
+
+//seed blog-post data
+function seedTestBlogData() {
+  console.log('seeding blost post data');
+  const seedData = [];
+  //push 10 fake blog posts to seedData array
+  for(let i=0; i < 10; i++) {
+    seedData.push(createPostData());
+  }
+  return Post.insertMany(seedData);
+}
+
+//creates single blog post
+function createPostData() {
+  return {
+    title: faker.lorem.sentence(),
+    content: faker.lorem.paragraph(),
+    author: {
+      firstName: faker.name.firstName(),
+      lastName: faker.name.lastName()
+    }
+  }
+}
+
+//tear down database
+function tearDownDb() {
+  console.log('Deleting database');
+  //return promise to drop database
+  return mongoose.connection.dropDatabase();
+}
+
 describe('Blog API', function() {
   before(function() {
-    return runServer();
+    //runServer needs to use the test database rather than real database
+    return runServer(TEST_DATABASE_URL);
   });
+
+  beforeEach(function() {
+    //seed test-blog-app db with data
+    return seedTestBlogData();
+  });
+
+  afterEach(function() {
+    //tear down test-blog-app db
+    return tearDownDb();
+  });
+
   after(function() {
     return closeServer();
   });
