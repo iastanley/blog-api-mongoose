@@ -108,20 +108,23 @@ describe('Blog API', function() {
     it('should return post with correct id', function() {
       //STILL WORKING ON THIS. NEED TO FINISH!!!
       let postID;
+      let testPost;
       return Post
         .findOne()
         .exec()
         .then(post => {
           postID = post.id;
+          testPost = post.apiReturn();
           return chai.request(app)
             .get(`/blog-posts/${postID}`)
         })
         .then(res => {
-
-        })
-
-      chai.request(app)
-        .get()
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.should.include.keys('id', 'title', 'author', 'content');
+          res.body.id.should.equal(postID);
+          res.body.should.deep.equal(testPost);
+        });
     });
   }); //end of GET tests
 

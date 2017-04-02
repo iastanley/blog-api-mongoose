@@ -18,7 +18,7 @@ postSchema.virtual('fullName').get(function() {
 //instance method for return format for API
 postSchema.methods.apiReturn = function() {
   return {
-    id: this._id,
+    id: this.id,
     title: this.title,
     author: this.fullName,
     content: this.content
