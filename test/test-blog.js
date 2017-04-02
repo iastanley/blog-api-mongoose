@@ -163,52 +163,45 @@ describe('Blog API', function() {
     });
   }); //end of POST tests
 
+  describe('tests for PUT request', function() {
+    it('should update fields', function() {
+      const updateData = {
+        title: 'The Updated Title',
+        content: 'This is the updated content.'
+      };
 
-  // //test for PUT request
-  // it('should update post on PUT', function() {
-  //   //create an updated data object
-  //   const updateData = {title: 'A', author: 'Illana', content: 'hello'};
-  //   return chai.request(app)
-  //     .get('/blog-posts')
-  //     .then(function(res) {
-  //       updateData.id = res.body[0].id;
-  //       return chai.request(app)
-  //         .put(`/blog-posts/${updateData.id}`)
-  //         .send(updateData);
-  //     })
-  //     .then(function(res) {
-  //       res.should.have.status(200);
-  //       res.should.be.json;
-  //       res.body.should.be.a('object');
-  //       res.body.should.deep.equal(updateData);
-  //     });
-  // }); //end of PUT tests
-  //
-  // //test for PUT request with bad id
-  // //WORKS WHEN YOU DON'T USE PROMISES
-  // it('should fail on bad id to PUT', function(done) {
-  //   //create an updated data object
-  //   const badData = {id: 'AAA', title: 'A', author: 'Illana', content: 'hello'};
-  //   chai.request(app)
-  //     .put('/blog-posts/XXX')
-  //     .send(badData)
-  //     .end(function(res) {
-  //       res.should.have.status(400);
-  //     });
-  //     done();
-  // });
-  //
-  // //SAME TEST DOES NOT WORK WHEN PROMISES USED
-  // it('SECOND bad id on PUT', function () {
-  //   const badData = {id: 'AAA', title: 'A', author: 'Illana', content: 'hello'};
-  //   return chai.request(app)
-  //     .put('/blog-posts/XXX')
-  //     .send(badData)
-  //     .end(function(err, res) {
-  //       res.should.have.status(400);
-  //     });
-  // });
-  //
+      return Post
+        .findOne()
+        .exec()
+        .then(post => {
+          //add id to the updateData object to be used in PUT request
+          updateData.id = post.id;
+          return chai.request(app)
+            .put(`/blog-posts/${post.id}`)
+            .send(updateData);
+        })
+        .then(res => {
+          res.should.have.status(200);
+          res.should.be.json;
+          res.body.should.be.a('object');
+          res.body.should.include.keys('id', 'title', 'content', 'author');
+          res.body.id.should.equal(updateData.id);
+          res.body.title.should.equal(updateData.title);
+          res.body.content.should.equal(updateData.content);
+          return Post
+            .findById(updateData.id)
+            .exec();
+        })
+        .then(post => {
+          post.title.should.equal(updateData.title);
+          post.content.should.equal(updateData.content);
+        });
+    });
+  }); //end of PUT tests
+
+  describe('tests for DELETE request', function() {
+    
+  }); //end of DELETE tests
   // //test for DELETE request
   // it('should delete post on DELETE', function() {
   //   return chai.request(app)
