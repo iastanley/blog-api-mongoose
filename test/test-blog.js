@@ -200,18 +200,26 @@ describe('Blog API', function() {
   }); //end of PUT tests
 
   describe('tests for DELETE request', function() {
-    
+    it('should delete post by id', function() {
+      let deletedPost;
+      //first find a post to get id from
+      return Post
+        .findOne()
+        .exec()
+        .then(post => {
+          deletedPost = post;
+          return chai.request(app)
+            .delete(`/blog-posts/${deletedPost.id}`);
+        })
+        .then(res => {
+          res.should.have.status(204);
+          return Post
+            .findById(deletedPost.id)
+            .exec();
+        })
+        .then(post => {
+          should.not.exist(post);
+        });
+    });
   }); //end of DELETE tests
-  // //test for DELETE request
-  // it('should delete post on DELETE', function() {
-  //   return chai.request(app)
-  //     .get('/blog-posts')
-  //     .then(function(res) {
-  //       return chai.request(app)
-  //         .delete(`/blog-posts/${res.body[0].id}`);
-  //     }).then(function(res) {
-  //       res.should.have.status(204);
-  //     });
-  // }); //end of DELETE tests
-
 }); //end of describe
