@@ -36,6 +36,15 @@ function createPostData() {
   }
 }
 
+//create apiReturn formatted object
+function createPostApiReturn() {
+  return {
+    title: faker.lorem.sentence(),
+    content: faker.lorem.paragraph(),
+    author: faker.name.firstName() + ' ' + faker.name.lastName()
+  }
+}
+
 //tear down database
 function tearDownDb() {
   console.log('Deleting database');
@@ -106,7 +115,6 @@ describe('Blog API', function() {
 
     //test for retrieving post with specific id
     it('should return post with correct id', function() {
-      //STILL WORKING ON THIS. NEED TO FINISH!!!
       let postID;
       let testPost;
       return Post
@@ -128,42 +136,34 @@ describe('Blog API', function() {
     });
   }); //end of GET tests
 
-  // //test for GET request
-  // it('should list blog posts on GET', function() {
-  //   return chai.request(app)
-  //     .get('/blog-posts')
-  //     .then(function(res) {
-  //       //assertions for GET
-  //       res.should.have.status(200);
-  //       res.should.be.json;
-  //       res.body.should.be.a('array');
-  //       const expectedKeys = ['title', 'content', 'author', 'id'];
-  //       res.body.forEach(post => {
-  //         post.should.be.a('object');
-  //         post.should.include.keys(expectedKeys);
-  //       });
-  //     });
-  // }); //end of GET tests
-  //
-  // //test for POST request
-  // it('should add blog post on POST', function() {
-  //     //create newPost object
-  //     const newPost = {title: 'A', author: 'Illana S', content: 'hello'};
-  //     const expectedKeys = ['title', 'content', 'author', 'id'];
-  //     return chai.request(app)
-  //       .post('/blog-posts')
-  //       .send(newPost)
-  //       .then(function(res) {
-  //         res.should.have.status(201);
-  //         res.should.be.json;
-  //         res.body.should.be.a('object');
-  //         res.body.should.include.keys(expectedKeys);
-  //         res.body.id.should.not.be.null;
-  //         //check that res.body object is deep equal to newPost with id
-  //         res.body.should.deep.equal(Object.assign(newPost, {id: res.body.id}));
-  //       });
-  // }); //end of POST tests
-  //
+  describe('tests for POST requests', function() {
+    it('should add a new post', function() {
+      //post data sent in same for as apiReturn() gives
+      const newPost = createPostApiReturn();
+      return chai.request(app)
+        .post('/blog-posts')
+        .send(newPost)
+        .then(res => {
+          res.should.have.status(201);
+          res.should.be.json;
+          res.body.should.be.a('object');
+          res.body.should.include.keys('id', 'title', 'content', 'author');
+          res.body.title.should.equal(newPost.title);
+          res.body.content.should.equal(newPost.content);
+          res.body.author.should.equal(newPost.author);
+          return Post
+            .findById(res.body.id)
+            .exec();
+        })
+        .then(post => {
+          post.title.should.equal(newPost.title);
+          post.content.should.equal(newPost.content);
+          post.fullName.should.equal(newPost.author);
+        });
+    });
+  }); //end of POST tests
+
+
   // //test for PUT request
   // it('should update post on PUT', function() {
   //   //create an updated data object
