@@ -122,7 +122,7 @@ app.delete('/blog-posts/:id', (req, res) => {
 
 //catch all other routes
 app.use('*', (req, res) => {
-  res.status(404).send('URL Not Found');
+  res.status(404).send('URL Not Found No URL Here!');
 });
 
 //STARTING AND STOPPING THE SERVER FUNCTIONS
