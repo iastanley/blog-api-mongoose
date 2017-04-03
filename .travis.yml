@@ -2,3 +2,10 @@ language: node_js
 node_js: node
 services:
 - mongodb
+deploy:
+  provider: heroku
+  api_key:
+    secure: qu8D/RYyqLCEGPtleVBrEvNUdj9dqgWO4pl4R5jcr2RK29pfEJLTJPVISWz32Ksj/bkBaNWpCtaiuxz/AcOgqC2+kjwTOnEDxeqtwtCDPhGAedwJdHvhAkVaf7wc1yqivPyLmME4FCo+zo0E9DtNp8cdt5EKeKUEWM7D9ybGTd86vxd9yHycCxXfdGQAGoY4//53uijK28vA83IXlhFZGtjlQk+mcV+gUffyeW2HvfKidjXidwTo3m9hOTzcKe729MA+LM/QLyHraXWcbd7iiueJ5xDsLSM8SZd3XwVskm/qFEiUihJKwEooqsC7RO3J8FlmfrYEyzfKwaL3QeESXudx6gC3H2WN0XsY0Kt9fNlgCAxUOJwwLpRIrUi4kPfpTpoOiMecaLO9k8uOB9deKE9BDFIzxki5Q4lPVK+l2aGlkX1guj6wv4D/6VnISj8w+ggRVaPFIdwG7KWfISVa8OCQPo7sKwY4Gccsv7t2NmIcYoAIUKTMNPbCl0gHRCWUslNx67FcPyBA7XBv6y3997UcYDtASZS7a2Zram+g9SVgDRBWxEDuToAB7+9dkFLckX08bO4+bi3a91G31iRhIe3kuJnb0jNrXWBwcRs0ulDbEJYuMSRS/4KV8Mt3tGh7edRyLRvytmqw3+xcz9V6soHFAxi2/nGEFGKJk0uKCfU=
+  app: blog-apps-iastanley
+  on:
+    repo: iastanley/blog-api-mongoose
